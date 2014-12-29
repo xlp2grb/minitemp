@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+#usage: ./xautosshshutdown.ep ip
+set ip [lindex $argv 0]
+#spawn ssh gwac@190.168.1.$ip
+spawn ssh root@190.168.1.$ip
+expect {
+"*yes/no*" {send "yes\r";exp_continue}
+"*password: " {send "123456\r";exp_continue}
+}
+expect "# "
+send "poweroff\r"
+expect "Password:"
+send "123456\r"
+expect eof  

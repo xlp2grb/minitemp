@@ -1,0 +1,5 @@
+#!/bin/bash
+for ip in `cat listip`
+do
+./xautosshshutdown.ep $ip
+done

@@ -1,0 +1,7 @@
+#!/usr/bin/expect -f
+set timeout 180
+spawn ssh -Y cxlp@159.226.170.71
+expect "*password:"
+send "xin_li_ping\r"
+
+interact
