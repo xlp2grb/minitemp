@@ -17,7 +17,7 @@ FITFILE=`echo $cenccfile | sed 's/\.cencc1/.fit/'`
 
 MiniRadiusBright=11
 MinilowMagBright=8
-MinilargerMagBright=10
+MinilargerMagBright=10.5
 MinidimMagBright=14.0
 MinilowRadiusBright=30
 MinilargerRadiusBright=50
@@ -66,15 +66,27 @@ then
 		sleep 1
 		python isolated_bright_star_extract.py $cctran_dir $Ra $Dec $MiniRadiusBright $MinilowMagBright $MinilargerMagBright $MinidimMagBright $MinilowRadiusBright $MinilargerRadiusBright  
 		wait
-                if test -s $cctran_dir/bright*.txt
-                then
-                        echo "bright*.txt is ready" 
-                else
-			#python brightstar_extract_p.py $getCatalog_dir $Ra $Dec 12.7 6 9 14.0 30 50
+        if test -s $cctran_dir/bright*.txt
+        then
+            echo "bright*.txt is ready" 
+        else
+            echo "second request for bright objects"
 			sleep1
+            MinilargerMagBright=`echo $MinilargerMagBright | awk '{print($1+0.5)}'`
 			python isolated_bright_star_extract.py $cctran_dir $Ra $Dec $MiniRadiusBright $MinilowMagBright $MinilargerMagBright $MinidimMagBright $MinilowRadiusBright $MinilargerRadiusBright
-                        wait
-                fi
+            wait
+            if test -s $cctran_dir/bright*.txt
+            then
+                echo "bright*.txt is ready" 
+             else
+                 echo "Third request for bright objects"
+			    sleep1
+                MinilargerMagBright=`echo $MinilargerMagBright | awk '{print($1+0.5)}'`
+			    python isolated_bright_star_extract.py $cctran_dir $Ra $Dec $MiniRadiusBright $MinilowMagBright $MinilargerMagBright $MinidimMagBright $MinilowRadiusBright $MinilargerRadiusBright
+                wait
+            fi
+
+        fi
 
 		echo "python template_extract.py  "  $cctran_dir $Ra $Dec  $MiniRadiusTempBright $MinilowMagTemp $MinilargerMagTemp
 		#python template_extract_u.py $getCatalog_dir $Ra $Dec 12.7 1 14.0 
