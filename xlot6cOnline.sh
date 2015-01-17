@@ -60,9 +60,9 @@ xgetcatalog ( )
 xmakenewtemp (  )
 {
     #===================================================
-    echo "To check the image quality"
-    xcheckimgquality
-    wait
+    #echo "To check the image quality"
+    #xcheckimgquality
+    #wait
     #=====================================================
 
     accfile=`echo $newfile | sed 's/\.fit/.acc/'`
@@ -140,7 +140,7 @@ xcheckimgquality ( )
 xRetrack (  )
 {
     echo "xRetrack"
-    xcheckimgquality
+    #xcheckimgquality
     ccdid=`gethead $newfile "CCDID"`
     IDccdNum=`echo $newfile | cut -c4-5`
     IDccdNumPair=`echo $IDccdNum | awk '{print($1+1)}'`
@@ -284,7 +284,13 @@ xmaketemp ( )
         rm -rf list $newfile
         cd $dir_reductionCCD
         rm -rf gototemp.xy gototemp.sex Tempfile.cat 
+        
         #====================
+        echo "To check the image quality"
+        xcheckimgquality
+        wait
+        #====================
+
         todokeyword=`gethead $newfile "TODO"`
         Numtodokeyword=`gethead $newfile "TODO" | wc -l | awk '{print($1)}'` 	
         echo "Numtodokeyword : " $Numtodokeyword
