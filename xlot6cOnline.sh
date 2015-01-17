@@ -140,13 +140,14 @@ xcheckimgquality ( )
 xRetrack (  )
 {
     echo "xRetrack"
+    xcheckimgquality
     ccdid=`gethead $newfile "CCDID"`
     IDccdNum=`echo $newfile | cut -c4-5`
     IDccdNumPair=`echo $IDccdNum | awk '{print($1+1)}'`
     #imhead $newfile
     RA_Template=`gethead $newfile "RATEMP"`
     DEC_Template=`gethead $newfile "DECTEMP"`
-    if [ $RA_Template > 360  ] || [ $DEC_Template > 90  ] #for blank keywords
+    if [ ` echo " $RA_Template > 360 " | bc ` -eq 1  ] || [ ` echo " $DEC_Template > 90 " | bc ` -eq 1  ] #for blank keywords
     then
 	echo "keywords RaTemp and DecTemp are:  $RA_Template and $DEC_Template "
         echo "keywords of temp RA and DEC are not right"
