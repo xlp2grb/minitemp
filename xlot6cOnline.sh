@@ -110,11 +110,12 @@ xcheckimgquality ( )
     rm -rf image.sex
     sex $newfile  -c  daofind.sex  -CATALOG_NAME image.sex -DETECT_THRESH 5 -ANALYSIS_THRESH 5
     Num_imgquality=`wc -l image.sex | awk '{print($1)}'`
-    Num_img1=`cat image.sex | awk '{if($1>1 && $1<500 && $2>1 && $2<500)print($1,$2)}' | wc -l  | awk '{print($1)}'`
-    Num_img2=`cat image.sex | awk '{if($1>2500 && $1<3056 && $2>1 && $2<500)print($1,$2)}' | wc -l  | awk '{print($1)}'`
-    Num_img3=`cat image.sex | awk '{if($1>1 && $1<500 && $2>2500 && $2<3056)print($1,$2)}' | wc -l  | awk '{print($1)}'`
-    Num_img4=`cat image.sex | awk '{if($1>2500 && $1<3056 && $2>2500 && $2<3056)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    Num_img1=`cat image.sex | awk '{if($1>200 && $1<600 && $2>200 && $2<600)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    Num_img2=`cat image.sex | awk '{if($1>2400 && $1<2800 && $2>200 && $2<600)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    Num_img3=`cat image.sex | awk '{if($1>200 && $1<600 && $2>2400 && $2<2800)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    Num_img4=`cat image.sex | awk '{if($1>2400 && $1<2800 && $2>2400 && $2<2800)print($1,$2)}' | wc -l  | awk '{print($1)}'`
     Num_img5=`cat image.sex | awk '{if($1>1500 && $1<2500 && $2>1500 && $2<2500)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    echo "The average number should be about 340 for normal image in 400*400 pixels"
     echo "The obj. num. in fields of four corners and center are: "$Num_img1 $Num_img2 $Num_img3 $Num_img4 $Num_img5
     if [ $Num_imgquality -lt 5000 ]
     then
@@ -428,6 +429,7 @@ xBeginToMakeTemp ( )
         echo `pwd`
         ls *.fit >newlist
         echo "There is an image in current folder"
+        date
         sleep 3
         checkimage
         wait
