@@ -17,7 +17,7 @@ FITFILE=`echo $cenccfile | sed 's/\.cencc1/.fit/'`
 
 MiniRadiusBright=11
 MinilowMagBright=8
-MinilargerMagBright=10.5
+MinilargerMagBright=10.0
 MinidimMagBright=14.0
 MinilowRadiusBright=30
 MinilargerRadiusBright=50

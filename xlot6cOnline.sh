@@ -114,7 +114,7 @@ xcheckimgquality ( )
     Num_img2=`cat image.sex | awk '{if($1>2400 && $1<2800 && $2>200 && $2<600)print($1,$2)}' | wc -l  | awk '{print($1)}'`
     Num_img3=`cat image.sex | awk '{if($1>200 && $1<600 && $2>2400 && $2<2800)print($1,$2)}' | wc -l  | awk '{print($1)}'`
     Num_img4=`cat image.sex | awk '{if($1>2400 && $1<2800 && $2>2400 && $2<2800)print($1,$2)}' | wc -l  | awk '{print($1)}'`
-    Num_img5=`cat image.sex | awk '{if($1>1500 && $1<2500 && $2>1500 && $2<2500)print($1,$2)}' | wc -l  | awk '{print($1)}'`
+    Num_img5=`cat image.sex | awk '{if($1>1300 && $1<1700 && $2>1300 && $2<1700)print($1,$2)}' | wc -l  | awk '{print($1)}'`
     echo "The average number should be about 340 for normal image in 400*400 pixels"
     echo "The obj. num. in fields of four corners and center are: "$Num_img1 $Num_img2 $Num_img3 $Num_img4 $Num_img5
     if [ $Num_imgquality -lt 5000 ]
@@ -125,7 +125,7 @@ xcheckimgquality ( )
         wait
         rm -rf errorimage.flag list image.sex  $newfile $ipaddressname
         continue
-    elif  [ $Num_img1 -lt 100 ] || [ $Num_img2 -lt 100 ] || [ $Num_img3 -lt 100 ] || [ $Num_img4 -lt 100 ]
+    elif  [ $Num_img1 -lt 50 ] || [ $Num_img2 -lt 50 ] || [ $Num_img3 -lt 50 ] || [ $Num_img4 -lt 50 ]
     then
         echo "There are less objects in some corners"
         echo $newfile "is not good !" >errorimage.flag
@@ -148,10 +148,14 @@ xRetrack (  )
     #imhead $newfile
     RA_Template=`gethead $newfile "RATEMP"`
     DEC_Template=`gethead $newfile "DECTEMP"`
-    if [ ` echo " $RA_Template > 360 " | bc ` -eq 1  ] || [ ` echo " $DEC_Template > 90 " | bc ` -eq 1  ] #for blank keywords
+	echo `date`
+	echo $newfile
+	echo "keywords RaTemp and DecTemp are:  $RA_Template and $DEC_Template "
+    if [ ` echo " $RA_Template > 360.0 " | bc ` -eq 1  ] || [ ` echo " $DEC_Template > 90.0 " | bc ` -eq 1  ] #for blank keywords
     then
 	echo "keywords RaTemp and DecTemp are:  $RA_Template and $DEC_Template "
-        echo "keywords of temp RA and DEC are not right"
+        echo "keywords of temp RA and DEC are not right, nothing to do!"
+	rm -rf $newfile
 	continue
     fi
     case $ccdid in
@@ -417,7 +421,7 @@ xBeginToMakeTemp ( )
         cd $dir_source
         rm -rf delete.flag oldlist
         touch oldlist
-        echo "delete the tempfile is done"
+        echo " Have deleted the tempfile "
         continue
     fi	
     #    cd $dir_source
