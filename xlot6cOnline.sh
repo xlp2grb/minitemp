@@ -146,17 +146,19 @@ xRetrack (  )
     IDccdNum=`echo $newfile | cut -c4-5`
     IDccdNumPair=`echo $IDccdNum | awk '{print($1+1)}'`
     #imhead $newfile
-    RA_Template=`gethead $newfile "RATEMP"`
-    DEC_Template=`gethead $newfile "DECTEMP"`
+    RA_Template=`gethead -u $newfile "RATEMP"`
+    DEC_Template=`gethead -u $newfile "DECTEMP"`
 	echo `date`
 	echo $newfile
 	echo "keywords RaTemp and DecTemp are:  $RA_Template and $DEC_Template "
-    if [ ` echo " $RA_Template > 360.0 " | bc ` -eq 1  ] || [ ` echo " $DEC_Template > 90.0 " | bc ` -eq 1  ] #for blank keywords
+    if [ "$RA_Template"  == "___"  ] || [  "$DEC_Template" == "___"  ] #for blank keywords
     then
 	echo "keywords RaTemp and DecTemp are:  $RA_Template and $DEC_Template "
         echo "keywords of temp RA and DEC are not right, nothing to do!"
 	rm -rf $newfile
 	continue
+    else
+	echo "keywords are right"
     fi
     case $ccdid in
         A | C | E | G | I | K )
