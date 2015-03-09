@@ -388,120 +388,6 @@ checkimage ( )
         continue
     fi
 }
-xsenterrormsgforSkyCoordcaliToCCDservice (  )
-{
-    CCDserver_dir=/data2/workspace/redufile/matchfile
-    case $mountid in                                                                                                                                                   M1 )
-  SouthCCD_IP=190.168.1.11;
-  NorthCCD_IP=190.168.1.12;;   
-  M2 )
-  SouthCCD_IP=190.168.1.13;
-  NorthCCD_IP=190.168.1.14;;   
-  M3 )
-  SouthCCD_IP=190.168.1.15;
-  NorthCCD_IP=190.168.1.16;;   
-  M4 )
-  SouthCCD_IP=190.168.1.17;
-  NorthCCD_IP=190.168.1.18;;   
-  M5 )
-  SouthCCD_IP=190.168.1.19;
-  NorthCCD_IP=190.168.1.20;;   
-  M6 )
-  SouthCCD_IP=190.168.1.21;
-  NorthCCD_IP=190.168.1.22;;   
-  esac
-  if test -r errorSkyCoordCali.flag
-  then
-        echo "./xautocopy_remote.f errorSkyCoordCali.flag $SouthCCD_IP $CCDserver_dir" >> $Monitortimestring
-        ./xautocopy_remote.f errorSkyCoordCali.flag $SouthCCD_IP $CCDserver_dir
-        wait
-        echo "./xautocopy_remote.f errorSkyCoordCali.flag $NorthCCD_IP $CCDserver_dir " >> $Monitortimestring
-        ./xautocopy_remote.f errorSkyCoordCali.flag $NorthCCD_IP $CCDserver_dir
-        wait
-        rm errorSkyCoordCali.flag
-  elif test -r errorSkyCoordCali_no2CCDworking.flag
-  then
-        echo "./xautocopy_remote.f errorSkyCoordCali_no2CCDworking.flag $SouthCCD_IP $CCDserver_dir" >> $Monitortimestring
-        ./xautocopy_remote.f errorSkyCoordCali_no2CCDworking.flag $SouthCCD_IP $CCDserver_dir
-        wait
-        echo "./xautocopy_remote.f errorSkyCoordCali_no2CCDworking.flag $NorthCCD_IP $CCDserver_dir " >> $Monitortimestring
-        ./xautocopy_remote.f errorSkyCoordCali_no2CCDworking.flag $NorthCCD_IP $CCDserver_dir
-        wait
-        rm errorSkyCoordCali_no2CCDworking.flag
- fi
-
-}
-
-xfindSameMountImageFromDiffCCD (  )
-{
-    echo "xfindSameMountImageFromDiffCCD" `date` >>$Monitortimestring
-    ls *cencc1 >allcencc1.lst
-    ls *.cencc1 >>$Monitortimestring
-    for mountid in M1 M2 M3 M4 M5 M6;
-    do
-        cencc1lst=`echo $mountid"_cencc1.lst"`
-        Res_cencc1lst=`echo $mountid"_cencc1_RealSkyCoord.txt"`
-        cat allcencc1.lst | grep "$mountid" >$cencc1lst
-        if test -s $cencc1lst  #the num of files in $cencc1lst is 1 or 2
-        then
-             echo $cencc1lst >>$Monitortimestring
-             NumbImageForSkyCoordCali=`cat $cencc1lst | wc -l | awk '{print($1)}'`
-             if [ $NumbImageForSkyCoordCali == 2 ]
-             then
-                 SouthImage=`head -1 $cencc1lst`
-                 NorthImage=`tail -1 $cencc1lst`
-                 ra_sky_southImage=`cat SouthImage | awk '{print($1)}'`
-                 dec_sky_southImage=`cat SouthImage | awk '{print($2)}'`
-                 ra_sky_NorthImage=`cat NorthImage | awk '{print($1)}'`
-                 dec_sky_NorthImage=`cat NorthImage | awk '{print($2)}'`
-                 python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage  $dec_sky_NorthImage >>$Monitortimestring 
-                 python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage $dec_sky_NorthImage | head -2 | tail -1 |  awk '{print(MM_RA"$4"_DEC"$5"%"}' MM=$mountid >$Res_cencc1lst
-                 wait
-                 cp $Res_cencc1lst listForSkyCoordCal.cat 
-                 cp /home/gwac/gwacsoft/xsentSkyCoorCali ./
-                 ./xsentSkyCoorCali  #port is 18852 and ip is 190.168.1.32 
-                 wait
-                 cat listForSkyCoordCal.cat >>$Monitortimestring
-             else  # the number of $mountid cencc1 files is 1 
-                 echo "No enough image in $cencc1lst"
-                 echo "No enough image in $cencc1lst"  >>Monitortimestring
-                 Num_fitsfileSkyC=`ls $mountid"*.fits" | wc -l | awk '{print($1)}'`
-                 if [ $Num_fitsfileSkyC == 2 ]  # the number of $mountid fits  is 2 , this means Astrometry is failed
-                 then
-                    touch errorSkyCoordCali.flag
-                #    xsenterrormsgforSkyCoordcaliToCCDservice
-                 else  # the number of $mountid fits is 1, A CCD on this mount might be unworked.
-                    echo "No enough fits for mount $mountid " >>$Monitortimestring
-                    touch errorSkyCoordCali_no2CCDworking.flag
-                fi 
-                xsenterrormsgforSkyCoordcaliToCCDservice
-            fi
-        fi
-    done
-}
-
-xmkSkycoordCalibration ( )
-{
-    rm -rf $dir_reductionCCD/*
-	cp *.fits /$dir_reductionCCD
-    cd $dir_reductionCCD
-    ls *.fits >list
-    ls *.fits >>$Monitortimestring
-    lot6c2.py M1AA list
-    wait
-    cp /home/gwac/han/GWAC_tools/minigwac_center_codelist/* $dir_reductionCCD
-    wait
-    if test -r *.cencc1
-    then
-        xfindSameMountImageFromDiffCCD
-    else
-        echo "Astrometry is failed" 
-        echo "Astrometry is failed" >> $Monitortimestring
-    fi
-    cd $dir_source
-    rm *.fits
-}
-
 
 xBeginToMakeTemp ( )
 {
@@ -551,17 +437,8 @@ xBeginToMakeTemp ( )
         echo "There is an image in current folder"
         date
         sleep 3
-	if [ $dir_source == "SkyC" ]
-	then
-        echo `date` >>$Monitortimestring
-        echo "Sky coord coordinates " >>$Monitortimestring
-		sleep 120  #waiting for all images from all working CCD for Sky coord calibration
-        xmkSkycoordCalibration
-
-	else
-        	checkimage
-        	wait
-	fi
+        checkimage
+        wait
     fi
 }
 
@@ -607,7 +484,6 @@ echo "Temp making is preparing: "
 filelist=$HOME/gwacsoft/list6c
 dir_reduction=$HOME/reddir
 result_dir=$HOME/tempfile/result
-Monitor_dir=/home/gwac/reddir/monitor
 #dir_source=`head -$1 $filelist | tail -1`
 #cd $dir_source
 #CCDfile=`echo $dir_source | cut -c20-24`
@@ -629,8 +505,6 @@ done
 #echo "Process id: $1;	Work dir: $dir_source"
 while :
 do
-    Monitortimestring=`date -u +%y%m%d`
-    monitorstring=`echo $Monitor_dir"/tempmaking_"$Monitortimestring`
     #=====================================================
     for dir_source in `cat $filelist`
     do

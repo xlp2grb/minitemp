@@ -1,6 +1,6 @@
 #!/usr/bin/expect -f
 #download
-#usage: xautocopy_remote.f 243 /home/gwac/software ip term_dir
+#usage: xautocopy_remote.f copy_file ip term_dir
 set copy_file [lindex $argv 0]
 set ip [lindex $argv 1]
 set term_dir [lindex $argv 2]
