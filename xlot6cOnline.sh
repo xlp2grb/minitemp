@@ -450,12 +450,18 @@ xfindSameMountImageFromDiffCCD (  )
              then
                  SouthImage=`head -1 $cencc1lst`
                  NorthImage=`tail -1 $cencc1lst`
-                 ra_sky_southImage=`cat SouthImage | awk '{print($1)}'`
-                 dec_sky_southImage=`cat SouthImage | awk '{print($2)}'`
-                 ra_sky_NorthImage=`cat NorthImage | awk '{print($1)}'`
-                 dec_sky_NorthImage=`cat NorthImage | awk '{print($2)}'`
-                 python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage  $dec_sky_NorthImage >>$Monitortimestring 
-                 python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage $dec_sky_NorthImage | head -2 | tail -1 |  awk '{print(MM_RA"$4"_DEC"$5"%"}' MM=$mountid >$Res_cencc1lst
+		echo "Files in SouthImage are : "
+		cat $SouthImage
+		echo "Files in Northimage are : "
+		cat $NorthImage
+                 ra_sky_southImage=`cat $SouthImage | head -1  | awk '{print($1)}'`
+                 dec_sky_southImage=`cat $SouthImage | head -1 |  awk '{print($2)}'`
+                 ra_sky_NorthImage=`cat $NorthImage | head -1 |  awk '{print($1)}'`
+                 dec_sky_NorthImage=`cat $NorthImage | head -1 |  awk '{print($2)}'`
+               
+		echo $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage $dec_sky_NorthImage
+                 echo "python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage  $dec_sky_NorthImage" >>$Monitortimestring 
+                 python minigwac_center_cal.py $ra_sky_southImage $dec_sky_southImage $ra_sky_NorthImage $dec_sky_NorthImage | head -2 | tail -1 |  awk '{print(MM"_RA_"$4"_DEC_"$5"%")}' MM=$mountid >$Res_cencc1lst
                  wait
                  cp $Res_cencc1lst listForSkyCoordCal.cat 
                  cp /home/gwac/gwacsoft/xsentSkyCoorCali ./
@@ -480,6 +486,7 @@ xfindSameMountImageFromDiffCCD (  )
             fi
         fi
     done
+	cd $dirs_source
 }
 
 xmkSkycoordCalibration ( )
